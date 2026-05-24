@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record FinanciamentoResponseDTO(
-    Long Id,
+    Long id,
     BigDecimal valorTotalFinal,
     BigDecimal valorTotalJuros,
-    List<parcelaDTO> listaMemoriaDeCalculo
+    List<ParcelaDTO> listaMemoriaDeCalculo
 ) {
 }

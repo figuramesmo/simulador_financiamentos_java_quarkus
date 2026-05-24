@@ -75,7 +75,7 @@ public class Financiamento extends PanacheEntityBase {
         this.valorTotalJuros = valorTotalJuros;
     }
 
-    public List<Parcela> getListaMemoriaDeCalculo() {
+    public List<Parcela> getMemoriaDeCalculo() {
         return memoriaDeCalculo;
     }
 

@@ -10,6 +10,6 @@ public record SimulacaoResponseDTO(
         Integer prazoMeses,
         BigDecimal valorTotalFinal,
         BigDecimal valorTotalJuros,
-        List<parcelaDTO> memoriaDeCalculo
+        List<ParcelaDTO> memoriaDeCalculo
 ) {
 }
