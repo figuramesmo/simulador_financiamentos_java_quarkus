@@ -18,7 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 import java.net.URI;
 
-@Path("/financimentos")
+@Path("/financiamentos")
 public class SimulacaoResource {
 
     private final SimulacaoService simulacaoService;
@@ -36,7 +36,7 @@ public class SimulacaoResource {
         description = "Simulação de financiamento criada com sucesso",
         content = @Content(
                 mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = FinanciamentoRequestDTO.class)
+                schema = @Schema(implementation = FinanciamentoResponseDTO.class)
         )
     )
     public Response criaFinanciamento(
@@ -45,7 +45,7 @@ public class SimulacaoResource {
         FinanciamentoRequestDTO requestDTO
     ){
         FinanciamentoResponseDTO response = simulacaoService.criaFinanciamento(requestDTO);
-        URI location = URI.create("/financimentos/" + response.id());
+        URI location = URI.create("/financiamentos/" + response.id());
 
         return Response
                 .created(location)

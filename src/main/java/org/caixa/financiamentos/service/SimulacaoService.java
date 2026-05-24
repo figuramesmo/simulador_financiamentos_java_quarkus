@@ -26,7 +26,7 @@ public class SimulacaoService {
         this.parcelaRepository = parcelaRepository;
     }
 
-    public static final MathContext MATH_CONTEXT = new MathContext(6, RoundingMode.HALF_UP);
+    public static final MathContext MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_EVEN);
 
     @Transactional
     public FinanciamentoResponseDTO criaFinanciamento(
@@ -38,7 +38,8 @@ public class SimulacaoService {
                 financiamentoRequestDTO.taxaJurosMensal(),
                 financiamentoRequestDTO.prazoMeses()
                 );
-        BigDecimal valorTotalFinal = montantePeriodoTotal(
+
+        BigDecimal valorTotalFinal = montantePeriodo(
                 financiamento.getValorInicial(),
                 financiamento.getTaxaJurosMensal(),
                 financiamento.getPrazoMeses()
@@ -46,35 +47,32 @@ public class SimulacaoService {
 
         financiamento.setValorTotalFinal(valorTotalFinal);
 
-        BigDecimal valorTotalJuros = montanteJurosPeriodoTotal(
+        BigDecimal valorTotalJuros = montanteJurosPeriodo(
                 financiamento.getValorInicial(),
-                valorTotalFinal
+                financiamento.getValorTotalFinal()
         );
 
         financiamento.setValorTotalJuros(valorTotalJuros);
 
+        geraMemoriaDeCalculo(financiamento);
+
         financiamentoRepository.persist(financiamento);
 
-        return new FinanciamentoResponseDTO(
-            financiamento.getId(),
-            financiamento.getValorTotalFinal().setScale(4, RoundingMode.HALF_UP),
-            financiamento.getValorTotalJuros().setScale(4, RoundingMode.HALF_UP),
-            parcelaToDTO(financiamento.getMemoriaDeCalculo())
-        );
+        return financiamentoToDTO(financiamento);
     }
 
-    private BigDecimal montantePeriodoTotal(
+    private BigDecimal montantePeriodo(
             BigDecimal valorInicial,
             BigDecimal taxaJurosMensal,
             Integer prazoMeses
     ){
         BigDecimal taxaJurosDecimal = taxaJurosMensal.divide(BigDecimal.valueOf(100), MATH_CONTEXT);
         BigDecimal taxaCrescimento = BigDecimal.ONE.add(taxaJurosDecimal);
-        BigDecimal taxaCrescimentoTemporal = taxaCrescimento.pow(prazoMeses, MATH_CONTEXT);
+        BigDecimal taxaCrescimentoTemporal = taxaCrescimento.pow(prazoMeses);
         return valorInicial.multiply(taxaCrescimentoTemporal);
     }
 
-    private BigDecimal montanteJurosPeriodoTotal(
+    private BigDecimal montanteJurosPeriodo(
             BigDecimal valorInicial,
             BigDecimal valorTotalFinal
     ){
@@ -82,14 +80,48 @@ public class SimulacaoService {
     }
 
 
+    private void geraMemoriaDeCalculo(
+            Financiamento financiamento
+    ){
+        BigDecimal saldoInicial = financiamento.getValorInicial();
+
+        // Calcula juros e saldo final mês a mês
+        for (int mes = 1; mes <= financiamento.getPrazoMeses(); mes++) {
+            // aplica a taxa de juros mensal sobre o saldo inicial do mês
+            BigDecimal saldoFinal = montantePeriodo(saldoInicial, financiamento.getTaxaJurosMensal(), 1);
+            // calcula o valor do juros mensal
+            BigDecimal juros = montanteJurosPeriodo(saldoInicial, saldoFinal);
+
+            // cria a parcela correspondente a este mês e persiste
+            Parcela parcela = new Parcela(mes, saldoInicial, juros, saldoFinal);
+            parcelaRepository.persist(parcela);
+
+            // adiciona a parcela à memória de cálculo do financiamento
+            financiamento.addMemoriaDeCalculo(parcela);
+
+            // o saldo final deste mês se torna o saldo inicial do próximo mês
+            saldoInicial = saldoFinal;
+        }
+    }
+
+
     private List<ParcelaDTO> parcelaToDTO(List<Parcela> parcelas) {
         return parcelas.stream()
                 .map(parcela -> new ParcelaDTO(
                         parcela.getMes(),
-                        parcela.getSaldoInicial().setScale(4, RoundingMode.HALF_UP),
-                        parcela.getJuros().setScale(4, RoundingMode.HALF_UP),
-                        parcela.getSaldoFinal().setScale(4, RoundingMode.HALF_UP)
+                        parcela.getSaldoInicial().setScale(4, RoundingMode.HALF_EVEN),
+                        parcela.getJuros().setScale(4, RoundingMode.HALF_EVEN),
+                        parcela.getSaldoFinal().setScale(4, RoundingMode.HALF_EVEN)
                 ))
                 .toList();
+    }
+
+    private FinanciamentoResponseDTO financiamentoToDTO(Financiamento financiamento) {
+        return new FinanciamentoResponseDTO(
+                financiamento.getId(),
+                financiamento.getValorTotalFinal().setScale(4, RoundingMode.HALF_EVEN),
+                financiamento.getValorTotalJuros().setScale(4, RoundingMode.HALF_EVEN),
+                parcelaToDTO(financiamento.getMemoriaDeCalculo())
+        );
     }
 }
