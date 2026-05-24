@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @ApplicationScoped
 public class SimulacaoService {
@@ -58,6 +59,16 @@ public class SimulacaoService {
 
         financiamentoRepository.persist(financiamento);
 
+        return financiamentoToDTO(financiamento);
+    }
+
+    @Transactional
+    public FinanciamentoResponseDTO getFinanciamentoById(
+            Long id
+    ){
+        Financiamento financiamento = financiamentoRepository.findByIdOptional(id).orElseThrow(
+                () -> new NoSuchElementException("O financiamento com a id " + id + " não foi encontrado.")
+        );
         return financiamentoToDTO(financiamento);
     }
 

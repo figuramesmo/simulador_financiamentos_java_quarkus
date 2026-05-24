@@ -2,10 +2,7 @@ package org.caixa.financiamentos.resource;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.caixa.financiamentos.dto.FinanciamentoRequestDTO;
@@ -52,6 +49,16 @@ public class SimulacaoResource {
                 .status(Response.Status.CREATED)
                 .entity(response)
                 .build();
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFinanciamento(
+        @PathParam("id") @NotNull(message = "O ID do financiamento é obrigatório") Long id
+    ) {
+        FinanciamentoResponseDTO response = simulacaoService.getFinanciamentoById(id);
+        return Response.ok(response).build();
     }
 
 }
