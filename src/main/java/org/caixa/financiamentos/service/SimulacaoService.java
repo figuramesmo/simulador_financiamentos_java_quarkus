@@ -78,7 +78,7 @@ public class SimulacaoService {
             BigDecimal taxaJurosMensal,
             Integer prazoMeses
     ){
-        BigDecimal taxaJurosDecimal = taxaJurosMensal.divide(BigDecimal.valueOf(100), MATH_CONTEXT);
+        BigDecimal taxaJurosDecimal = taxaJurosMensal.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_EVEN);
         BigDecimal taxaCrescimento = BigDecimal.ONE.add(taxaJurosDecimal);
         BigDecimal taxaCrescimentoTemporal = taxaCrescimento.pow(prazoMeses);
         return valorInicial.multiply(taxaCrescimentoTemporal);

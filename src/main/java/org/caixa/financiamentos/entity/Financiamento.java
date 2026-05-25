@@ -27,16 +27,19 @@ public class Financiamento extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal valorInicial;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal taxaJurosMensal;
 
     @Column(nullable = false)
     private Integer prazoMeses;
 
+    @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal valorTotalFinal;
+
+    @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal valorTotalJuros;
 
     @OneToMany(fetch = FetchType.EAGER)

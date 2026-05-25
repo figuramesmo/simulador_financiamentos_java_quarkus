@@ -20,8 +20,11 @@ public class Parcela {
     private Long id;
 
     private Integer mes;
+    @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal saldoInicial;
+    @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal juros;
+    @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal saldoFinal;
 
     public Long getId() {

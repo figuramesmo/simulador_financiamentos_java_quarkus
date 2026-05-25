@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 // Deserializer personalizado para garantir que os valores BigDecimal sejam interpretados com 4 casas decimais ao serem convertidos de JSON
-public class FixedScaleDeserializer extends JsonDeserializer<BigDecimal> {
+public class EscalaFixaBigdecimalDTODeserializer extends JsonDeserializer<BigDecimal> {
     @Override
     public BigDecimal deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         String value = p.getValueAsString();
