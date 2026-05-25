@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import org.caixa.financiamentos.dto.FinanciamentoRequestDTO;
 import org.caixa.financiamentos.dto.FinanciamentoResponseDTO;
 import org.caixa.financiamentos.dto.ParcelaDTO;
+import org.caixa.financiamentos.dto.SimulacaoResponseDTO;
 import org.caixa.financiamentos.entity.Financiamento;
 import org.caixa.financiamentos.entity.Parcela;
 import org.caixa.financiamentos.repository.FinanciamentoRepository;
@@ -63,13 +64,13 @@ public class SimulacaoService {
     }
 
     @Transactional
-    public FinanciamentoResponseDTO getFinanciamentoById(
+    public SimulacaoResponseDTO getFinanciamentoById(
             Long id
     ){
         Financiamento financiamento = financiamentoRepository.findByIdOptional(id).orElseThrow(
                 () -> new NoSuchElementException("O financiamento com a id " + id + " não foi encontrado.")
         );
-        return financiamentoToDTO(financiamento);
+        return financiamentoToSimulacaoDTO(financiamento);
     }
 
     private BigDecimal montantePeriodo(
@@ -130,6 +131,18 @@ public class SimulacaoService {
     private FinanciamentoResponseDTO financiamentoToDTO(Financiamento financiamento) {
         return new FinanciamentoResponseDTO(
                 financiamento.getId(),
+                financiamento.getValorTotalFinal().setScale(4, RoundingMode.HALF_EVEN),
+                financiamento.getValorTotalJuros().setScale(4, RoundingMode.HALF_EVEN),
+                parcelaToDTO(financiamento.getMemoriaDeCalculo())
+        );
+    }
+
+    private SimulacaoResponseDTO financiamentoToSimulacaoDTO(Financiamento financiamento) {
+        return new SimulacaoResponseDTO(
+                financiamento.getId(),
+                financiamento.getValorInicial().setScale(4, RoundingMode.HALF_EVEN),
+                financiamento.getTaxaJurosMensal().setScale(4, RoundingMode.HALF_EVEN),
+                financiamento.getPrazoMeses(),
                 financiamento.getValorTotalFinal().setScale(4, RoundingMode.HALF_EVEN),
                 financiamento.getValorTotalJuros().setScale(4, RoundingMode.HALF_EVEN),
                 parcelaToDTO(financiamento.getMemoriaDeCalculo())

@@ -7,6 +7,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.caixa.financiamentos.dto.FinanciamentoRequestDTO;
 import org.caixa.financiamentos.dto.FinanciamentoResponseDTO;
+import org.caixa.financiamentos.dto.SimulacaoResponseDTO;
+import org.caixa.financiamentos.errorhandler.ErrorResponse;
 import org.caixa.financiamentos.service.SimulacaoService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -29,12 +31,20 @@ public class SimulacaoResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Cria a simulação de um financiamento", description = "Recebe os dados necessários para criar uma simulação de financiamento e retorna os detalhes da simulação criada.")
     @APIResponse(
-        responseCode = "201",
-        description = "Simulação de financiamento criada com sucesso",
-        content = @Content(
-                mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = FinanciamentoResponseDTO.class)
-        )
+            responseCode = "201",
+            description = "Simulação de financiamento criada com sucesso",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = FinanciamentoResponseDTO.class)
+            )
+    )
+    @APIResponse(
+            responseCode = "400",
+            description = "Requisição inválida devido a dados de entrada incorretos ou ausentes",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
     )
     public Response criaFinanciamento(
         @Valid
@@ -54,10 +64,35 @@ public class SimulacaoResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Recupera os detalhes de uma simulação de financiamento", description = "Recebe o ID de uma simulação de financiamento e retorna os detalhes dessa simulação, incluindo o valor total final, o valor total dos juros e a memória de cálculo mês a mês.")
+    @APIResponse(
+            responseCode = "200",
+            description = "Simulação de financiamento recuperada com sucesso",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = SimulacaoResponseDTO.class)
+            )
+    )
+    @APIResponse(
+            responseCode = "400",
+            description = "Requisição inválida devido a dados de entrada incorretos ou ausentes",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
+    @APIResponse(
+            responseCode = "404",
+            description = "Objeto não encontrado: Não existe uma simulação de financiamento com o ID fornecido",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
     public Response getFinanciamento(
         @PathParam("id") @NotNull(message = "O ID do financiamento é obrigatório") Long id
     ) {
-        FinanciamentoResponseDTO response = simulacaoService.getFinanciamentoById(id);
+        SimulacaoResponseDTO response = simulacaoService.getFinanciamentoById(id);
         return Response.ok(response).build();
     }
 
