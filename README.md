@@ -1,62 +1,103 @@
-# simulador-financiamentos
+# DESAFIO TÉCNICO: Simulador de Financiamentos - JAVA
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Aplicação para simular operações de crédito com cálculo de juros compostos, geração de memória de cálculo detalhada e persistência em banco de dados H2 (em memória).
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Características
 
-## Running the application in dev mode
+- **Versão do Java:** 25
+- **Framework**: Quarkus
+- **Banco de Dados**: H2 (em memória)
+- **Precisão Financeira**: BigDecimal com 4 casas decimais (arredondamento HALF_EVEN)
+- **API**: REST com documentação OpenAPI/Swagger
+- **Testes**: implementados com JUnit5 (visualização da cobertura com JaCoCo)
 
-You can run your application in dev mode that enables live coding using:
+## Como Executar o app
 
-```shell script
+**Atenção:** todos os comandos deste documento devem ser executados num terminal no diretório raiz deste projeto (o mesmo diretório do arquivo README.MD).
+
+### Executar em Modo Desenvolvimento
+
+Execute a aplicação em modo desenvolvimento:
+
+```bash
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+A aplicação estará disponível em `http://localhost:8080`.
 
-## Packaging and running the application
+### Compilar Empacotar e Executar em Modo Produção
 
-The application can be packaged using:
+Compile e empacote a aplicação:
 
-```shell script
+```bash
 ./mvnw package
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Execute o JAR gerado:
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```bash
+java -jar ./target/quarkus-app/quarkus-run.jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+A aplicação estará disponível em `http://localhost:8080`.
 
-## Creating a native executable
+## Como executar os testes e acessar o report de cobertura
 
-You can create a native executable using:
+**Atenção:** interrompa a execução da aplicação antes de executar os comandos de teste.
 
-```shell script
-./mvnw package -Dnative
+**Atenção:** todos os comandos deste documento devem ser executados num terminal no diretório raiz deste projeto (o mesmo diretório do arquivo README.MD).
+
+Execute todos os testes:
+
+```bash
+./mvnw clean test
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Após execução dos testes, visualize as estatíticas da cobertura com o JaCoCo report:
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+```bash
+start target/jacoco-report/index.html
 ```
 
-You can then execute your native executable with: `./target/simulador-financiamentos-1.0.0-SNAPSHOT-runner`
+## Endpoints da Aplicação
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+**Atenção:** para acessar os endpoints da Aplicação, esteja com a aplicação em execução.
 
-## Provided Code
+### Documentação da API
 
-### REST
+Acesse a documentação interativa via Swagger UI:
 
-Easily start your REST Web Services
+```
+http://localhost:8080/q/swagger-ui/
+```
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+Ou visualize o contrato OpenAPI em JSON:
+
+```
+http://localhost:8080/q/openapi.json
+```
+
+
+
+### Endpoints da API
+
+- `POST /simulacoes` - Simula um financiamento
+- `GET /simulacoes/{id}` - Retorna simulação completa com memória de cálculo
+
+**Dica:** Teste manualmente a aplicação via Swagger UI ou faça upload do contrato openapi.json no Postman
+
+## Estrutura do Projeto
+
+src/main/java/org/caixa/financiamentos/
+├── dto/               # Data Transfer Objects
+├── entity/            # Entidades JPA
+├── repository/        # Acesso a dados
+├── resource/          # Controllers REST
+├── service/           # Lógica de negócio
+├── errorhandler/      # Mapeamento de exceções
+└── utils/             # Serialização/Deserialização BigDecimal
+
+src/test/java/org/caixa/financiamentos/
+├── resource/          # Testes de integração REST
+├── service/           # Testes das regras de negócio
+└── utils/             # Testes de serialização/deserialização BigDecimal
