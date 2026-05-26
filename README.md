@@ -104,3 +104,6 @@ src/test/java/org/caixa/financiamentos/
 ├── service/           # Testes das regras de negócio
 └── utils/             # Testes de serialização/deserialização BigDecimal
 ```
+
+
+**Projeto disponível em:** https://github.com/figuramesmo/simulador_financiamentos_java_quarkus
