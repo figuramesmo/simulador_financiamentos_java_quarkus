@@ -81,8 +81,8 @@ http://localhost:8080/q/openapi.json
 
 ### Endpoints da API
 
-- `POST /simulacoes` - Simula um financiamento
-- `GET /simulacoes/{id}` - Retorna simulação completa com memória de cálculo
+- `POST /financiamentos` - Simula um financiamento
+- `GET /financiamentos/{id}` - Retorna simulação completa com memória de cálculo
 
 **Dica:** Teste manualmente a aplicação via Swagger UI ou faça upload do contrato openapi.json no Postman
 
