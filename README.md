@@ -88,7 +88,9 @@ http://localhost:8080/q/openapi.json
 
 ## Estrutura do Projeto
 
+```
 src/main/java/org/caixa/financiamentos/
+
 ├── dto/               # Data Transfer Objects
 ├── entity/            # Entidades JPA
 ├── repository/        # Acesso a dados
@@ -101,3 +103,4 @@ src/test/java/org/caixa/financiamentos/
 ├── resource/          # Testes de integração REST
 ├── service/           # Testes das regras de negócio
 └── utils/             # Testes de serialização/deserialização BigDecimal
+```
